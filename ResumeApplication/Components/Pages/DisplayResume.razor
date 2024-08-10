@@ -1,14 +1,211 @@
 ﻿@page "/displayresume"
 @using MySql.Data.MySqlClient
-@using System.Data;
+@using System.Data
+@using ResumeApplication.Models
 
+<!-- This is the UI part of the Razor component -->
+<div style="font-family: Arial, sans-serif; max-width: 100%; margin: auto; padding: 20px; border: 1px solid #ccc; border-radius: 10px; background-color: #f9f9f9;">
+    <h1 style="text-align: center;">@resume.FullName</h1>
+    <p><strong>Email:</strong> @resume.Email</p>
+    <p><strong>Phone:</strong> @resume.PhoneNumber</p>
+    <p><strong>Address:</strong> @resume.Address</p>
+    <p><strong>LinkedIn:</strong> <a href="@resume.LinkedIn">@resume.LinkedIn</a></p>
 
+    <h2 style="border-bottom: 1px solid #ccc; padding-bottom: 5px;">Experience</h2>
+    <ul style="list-style-type: none; padding: 0;">
+        @foreach (var job in resume.Experiences)
+        {
+            <li style="padding: 5px 0;">
+                <div style="display: flex; justify-content: space-between;">
+                    <div>
+                        <strong>@job.JobTitle</strong> at <strong>@job.CompanyName</strong>
+                    </div>
+                    <div style="text-align: right;">
+                        <p>@job.StartDate.ToString("MMM yyyy") - @job.EndDate.ToString("MMM yyyy")</p>
+                    </div>
+                </div>
+                @foreach (var point in job.Description.Split(new[] { '\n', ';' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    <p>@point</p>
+                }
+            </li>
+        }
+    </ul>
 
+    <h2 style="border-bottom: 1px solid #ccc; padding-bottom: 5px;">Education</h2>
+    <ul style="list-style-type: none; padding: 0;">
+        @foreach (var edu in resume.Educations)
+        {
+            <li style="padding: 5px 0; display: flex; justify-content: space-between;">
+                <div>
+                    <strong>@edu.Degree</strong> from <strong>@edu.Institution</strong>
+                    <p>@edu.Description</p>
+                </div>
+                <div style="text-align: right;">
+                    <p>@edu.StartDate.ToString("MMM yyyy") - @edu.EndDate.ToString("MMM yyyy")</p>
+                </div>
+            </li>
+        }
+    </ul>
 
-@code 
+    <h2 style="border-bottom: 1px solid #ccc; padding-bottom: 5px;">Skills</h2>
+    <ul style="list-style-type: none; padding: 0;">
+        @foreach (var skill in resume.Skills)
+        {
+            <li style="padding: 5px 0;">
+                <strong>@skill.SkillName</strong> - @skill.ProficiencyLevel
+            </li>
+        }
+    </ul>
+
+    <h2 style="border-bottom: 1px solid #ccc; padding-bottom: 5px;">Certifications</h2>
+    <ul style="list-style-type: none; padding: 0;">
+        @foreach (var cert in resume.Certifications)
+        {
+            <li style="padding: 5px 0; display: flex; justify-content: space-between;">
+                <div>
+                    <strong>@cert.CertificationName</strong> from <strong>@cert.IssuingOrganization</strong>
+                </div>
+                <div style="text-align: right;">
+                    <p>@cert.IssueDate.ToString("MMM yyyy") - @cert.ExpirationDate.ToString("MMM yyyy")</p>
+                </div>
+            </li>
+        }
+    </ul>
+</div>
+
+@code
 {
-	private MySqlConnection connection;
-	private readonly string connectionString = "server=127.0.0.1;user=root;password=password;database=rentaldb";
+    // Database connection
+    private MySqlConnection connection;
+    private readonly string connectionString = "server=127.0.0.1;user=root;password=password;database=resumedb";
 
+    // Resume object
+    private Resume resume;
 
+    // Load resume data from the database
+    protected override void OnInitialized()
+    {
+        resume = new Resume();
+        LoadResumeData();
+    }
+
+    /// <summary>
+    /// Load resume data from the database
+    /// </summary>
+    private void LoadResumeData()
+    {
+        // Open connection
+        using (connection = new MySqlConnection(connectionString))
+        {
+            connection.Open();
+
+            // Load resume details
+            using (var cmd = new MySqlCommand("SELECT * FROM resume WHERE ResumeID = 1", connection))
+            {
+                // Execute the command
+                using (var reader = cmd.ExecuteReader())
+                {
+                    // Read the data for the resume
+                    if (reader.Read())
+                    {
+                        resume.FullName = reader["FullName"].ToString();
+                        resume.Email = reader["Email"].ToString();
+                        resume.PhoneNumber = reader["PhoneNumber"].ToString();
+                        resume.Address = reader["Address"].ToString();
+                        resume.LinkedIn = reader["LinkedIn"].ToString();
+                        resume.Summary = reader["Summary"].ToString();
+                    }
+                }
+            }
+
+            // Load experiences
+            resume.Experiences = new List<Experience>();
+            using (var cmd = new MySqlCommand("SELECT * FROM experience WHERE ResumeID = 1", connection))
+            {
+                // Execute the command
+                using (var reader = cmd.ExecuteReader())
+                {
+                    // Read the data for each experience
+                    while (reader.Read())
+                    {
+                        // Add the experience to the resume
+                        resume.Experiences.Add(new Experience
+                            {
+                                JobTitle = reader["JobTitle"].ToString(),
+                                CompanyName = reader["CompanyName"].ToString(),
+                                StartDate = Convert.ToDateTime(reader["StartDate"]),
+                                EndDate = Convert.ToDateTime(reader["EndDate"]),
+                                Description = reader["Description"].ToString()
+                            });
+                    }
+                }
+            }
+
+            // Load education
+            resume.Educations = new List<Education>();
+            using (var cmd = new MySqlCommand("SELECT * FROM education WHERE ResumeID = 1", connection))
+            {
+                // Execute the command
+                using (var reader = cmd.ExecuteReader())
+                {
+                    // Read the data for each education
+                    while (reader.Read())
+                    {
+                        // Add the education to the resume
+                        resume.Educations.Add(new Education
+                            {
+                                Degree = reader["Degree"].ToString(),
+                                Institution = reader["Institution"].ToString(),
+                                StartDate = Convert.ToDateTime(reader["StartDate"]),
+                                EndDate = Convert.ToDateTime(reader["EndDate"]),
+                                Description = reader["Description"].ToString()
+                            });
+                    }
+                }
+            }
+
+            // Load skills
+            resume.Skills = new List<Skill>();
+            using (var cmd = new MySqlCommand("SELECT * FROM skills WHERE ResumeID = 1", connection))
+            {
+                // Execute the command
+                using (var reader = cmd.ExecuteReader())
+                {
+                    // Read the data for each skill
+                    while (reader.Read())
+                    {
+                        // Add the skill to the resume
+                        resume.Skills.Add(new Skill
+                            {
+                                SkillName = reader["SkillName"].ToString(),
+                                ProficiencyLevel = reader["ProficiencyLevel"].ToString()
+                            });
+                    }
+                }
+            }
+
+            // Load certifications
+            resume.Certifications = new List<Certification>();
+            using (var cmd = new MySqlCommand("SELECT * FROM certifications WHERE ResumeID = 1", connection))
+            {
+                using (var reader = cmd.ExecuteReader())
+                {
+                    // Read the data for each certification
+                    while (reader.Read())
+                    {
+                        // Add the certification to the
+                        resume.Certifications.Add(new Certification
+                            {
+                                CertificationName = reader["CertificationName"].ToString(),
+                                IssuingOrganization = reader["IssuingOrganization"].ToString(),
+                                IssueDate = Convert.ToDateTime(reader["IssueDate"]),
+                                ExpirationDate = Convert.ToDateTime(reader["ExpirationDate"])
+                            });
+                    }
+                }
+            }
+        }
+    }
 }
+

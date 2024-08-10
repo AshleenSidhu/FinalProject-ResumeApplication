@@ -9,7 +9,7 @@
     <p><strong>Email:</strong> @resume.Email</p>
     <p><strong>Phone:</strong> @resume.PhoneNumber</p>
     <p><strong>Address:</strong> @resume.Address</p>
-    <p><strong>LinkedIn:</strong> <a href="@resume.LinkedIn">@resume.LinkedIn</a></p>
+    <p><strong>LinkedIn:</strong> <a href="https://www.linkedin.com/in/ashleen-sidhu" target="_blank">@resume.LinkedIn</a></p>
 
     <!-- Display the Experience section-->
     <h2 style="border-bottom: 1px solid #ccc; padding-bottom: 5px;">Experience</h2>
@@ -198,7 +198,7 @@
                     // Read the data for each certification
                     while (reader.Read())
                     {
-                        // Add the certification to the
+                        // Add the certification to the resume
                         resume.Certifications.Add(new Certification
                             {
                                 CertificationName = reader["CertificationName"].ToString(),
@@ -212,4 +212,7 @@
         }
     }
 }
+
+
+
 

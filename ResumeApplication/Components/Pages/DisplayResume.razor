@@ -3,7 +3,7 @@
 @using System.Data
 @using ResumeApplication.Models
 
-<!-- This is the UI part of the Razor component -->
+<!-- Displays the resume section and styles layout of the UI -->
 <div style="font-family: Arial, sans-serif; max-width: 100%; margin: auto; padding: 20px; border: 1px solid #ccc; border-radius: 10px; background-color: #f9f9f9;">
     <h1 style="text-align: center;">@resume.FullName</h1>
     <p><strong>Email:</strong> @resume.Email</p>
@@ -11,6 +11,7 @@
     <p><strong>Address:</strong> @resume.Address</p>
     <p><strong>LinkedIn:</strong> <a href="@resume.LinkedIn">@resume.LinkedIn</a></p>
 
+    <!-- Display the Experience section-->
     <h2 style="border-bottom: 1px solid #ccc; padding-bottom: 5px;">Experience</h2>
     <ul style="list-style-type: none; padding: 0;">
         @foreach (var job in resume.Experiences)
@@ -32,6 +33,7 @@
         }
     </ul>
 
+    <!-- Display the Education section-->
     <h2 style="border-bottom: 1px solid #ccc; padding-bottom: 5px;">Education</h2>
     <ul style="list-style-type: none; padding: 0;">
         @foreach (var edu in resume.Educations)
@@ -48,6 +50,7 @@
         }
     </ul>
 
+    <!-- Display the Skills section-->
     <h2 style="border-bottom: 1px solid #ccc; padding-bottom: 5px;">Skills</h2>
     <ul style="list-style-type: none; padding: 0;">
         @foreach (var skill in resume.Skills)
@@ -58,6 +61,7 @@
         }
     </ul>
 
+    <!-- Display the Certifications section-->
     <h2 style="border-bottom: 1px solid #ccc; padding-bottom: 5px;">Certifications</h2>
     <ul style="list-style-type: none; padding: 0;">
         @foreach (var cert in resume.Certifications)

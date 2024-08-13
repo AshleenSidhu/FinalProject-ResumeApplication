@@ -1,0 +1,87 @@
+﻿@page "/contactme"
+
+@inject IJSRuntime JSRuntime
+
+<div>
+    <h1>Contact Me</h1>
+
+    <div class="mb-3">
+        <label for="nameInput" class="form-label">Name</label>
+        <input type="text" class="form-control" id="nameInput" placeholder="Enter your name" @bind="name" />
+    </div>
+
+    <div class="mb-3">
+        <label for="emailInput" class="form-label">Email</label>
+        <input type="email" class="form-control" id="emailInput" placeholder="Enter your email" @bind="email" />
+    </div>
+
+    <div class="mb-3">
+        <label for="messageInput" class="form-label">Message</label>
+        <textarea class="form-control" id="messageInput" rows="4" placeholder="Enter your message" @bind="message"></textarea>
+    </div>
+
+    <button @onclick="SubmitForm" class="btn btn-primary">Send</button>
+
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="alert alert-danger" role="alert">
+            @errorMessage
+        </div>
+    }
+
+    @if (isSuccess)
+    {
+        <div class="alert alert-success" role="alert">
+            Your message has been sent successfully!
+        </div>
+    }
+</div>
+
+@code {
+    private string name;
+    private string email;
+    private string message;
+    private string errorMessage;
+    private bool isSuccess;
+
+    private void SubmitForm()
+    {
+        errorMessage = string.Empty;
+        isSuccess = false;
+
+        if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(message))
+        {
+            errorMessage = "All fields are required.";
+            return;
+        }
+
+        if (!IsValidEmail(email))
+        {
+            errorMessage = "Please enter a valid email address.";
+            return;
+        }
+
+        isSuccess = true;
+        ClearForm();
+    }
+
+    private void ClearForm()
+    {
+        name = string.Empty;
+        email = string.Empty;
+        message = string.Empty;
+    }
+
+    private bool IsValidEmail(string email)
+    {
+        try
+        {
+            var addr = new System.Net.Mail.MailAddress(email);
+            return addr.Address == email;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+}

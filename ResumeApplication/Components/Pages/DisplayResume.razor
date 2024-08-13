@@ -1,7 +1,7 @@
 ﻿@page "/displayresume"
 @using MySql.Data.MySqlClient
 @using System.Data
-@using ResumeApplication.Models
+@using ResumeApplication.Classes
 
 <!-- Displays the resume section and styles layout of the UI -->
 <div style="font-family: Arial, sans-serif; max-width: 100%; margin: auto; padding: 20px; border: 1px solid #ccc; border-radius: 10px; background-color: #f9f9f9;">
@@ -9,24 +9,29 @@
     <p><strong>Email:</strong> @resume.Email</p>
     <p><strong>Phone:</strong> @resume.PhoneNumber</p>
     <p><strong>Address:</strong> @resume.Address</p>
+    <!-- Displays the linked in page -->
     <p><strong>LinkedIn:</strong> <a href="https://www.linkedin.com/in/ashleen-sidhu" target="_blank">@resume.LinkedIn</a></p>
 
     <!-- Display the Experience section-->
     <h2 style="border-bottom: 1px solid #ccc; padding-bottom: 5px;">Experience</h2>
     <ul style="list-style-type: none; padding: 0;">
-        @foreach (var job in resume.Experiences)
+        <!-- Uses the list to show the experiences -->
+        @foreach (var work in resume.Experiences)
         {
+            // Display the job title, company name, and date range
             <li style="padding: 5px 0;">
                 <div style="display: flex; justify-content: space-between;">
                     <div>
-                        <strong>@job.JobTitle</strong> at <strong>@job.CompanyName</strong>
+                        <strong>@work.JobTitle</strong> at <strong>@work.CompanyName</strong>
                     </div>
                     <div style="text-align: right;">
-                        <p>@job.StartDate.ToString("MMM yyyy") - @job.EndDate.ToString("MMM yyyy")</p>
+                        <p>@work.StartDate.ToString("MMM yyyy") - @work.EndDate.ToString("MMM yyyy")</p>
                     </div>
                 </div>
-                @foreach (var point in job.Description.Split(new[] { '\n', ';' }, StringSplitOptions.RemoveEmptyEntries))
+                <!-- Display the description points -->
+                @foreach (var point in work.Description.Split(new[] { '\n', ';' }, StringSplitOptions.RemoveEmptyEntries))
                 {
+                    // Display the description points
                     <p>@point</p>
                 }
             </li>
@@ -36,8 +41,10 @@
     <!-- Display the Education section-->
     <h2 style="border-bottom: 1px solid #ccc; padding-bottom: 5px;">Education</h2>
     <ul style="list-style-type: none; padding: 0;">
+        <!-- Uses the list to show the education -->
         @foreach (var edu in resume.Educations)
         {
+            // Display the degree, institution, and date range
             <li style="padding: 5px 0; display: flex; justify-content: space-between;">
                 <div>
                     <strong>@edu.Degree</strong> from <strong>@edu.Institution</strong>
@@ -53,6 +60,7 @@
     <!-- Display the Skills section-->
     <h2 style="border-bottom: 1px solid #ccc; padding-bottom: 5px;">Skills</h2>
     <ul style="list-style-type: none; padding: 0;">
+        <!-- Uses the list to show the skills -->
         @foreach (var skill in resume.Skills)
         {
             <li style="padding: 5px 0;">
@@ -64,6 +72,7 @@
     <!-- Display the Certifications section-->
     <h2 style="border-bottom: 1px solid #ccc; padding-bottom: 5px;">Certifications</h2>
     <ul style="list-style-type: none; padding: 0;">
+        <!-- Uses the list to show the certifications -->
         @foreach (var cert in resume.Certifications)
         {
             <li style="padding: 5px 0; display: flex; justify-content: space-between;">
@@ -105,7 +114,7 @@
             connection.Open();
 
             // Load resume details
-            using (var cmd = new MySqlCommand("SELECT * FROM resume WHERE ResumeID = 1", connection))
+            using (var cmd = new MySqlCommand("SELECT * FROM resume", connection))
             {
                 // Execute the command
                 using (var reader = cmd.ExecuteReader())
@@ -125,7 +134,7 @@
 
             // Load experiences
             resume.Experiences = new List<Experience>();
-            using (var cmd = new MySqlCommand("SELECT * FROM experience WHERE ResumeID = 1", connection))
+            using (var cmd = new MySqlCommand("SELECT * FROM experience", connection))
             {
                 // Execute the command
                 using (var reader = cmd.ExecuteReader())
@@ -148,7 +157,7 @@
 
             // Load education
             resume.Educations = new List<Education>();
-            using (var cmd = new MySqlCommand("SELECT * FROM education WHERE ResumeID = 1", connection))
+            using (var cmd = new MySqlCommand("SELECT * FROM education", connection))
             {
                 // Execute the command
                 using (var reader = cmd.ExecuteReader())
@@ -171,7 +180,7 @@
 
             // Load skills
             resume.Skills = new List<Skill>();
-            using (var cmd = new MySqlCommand("SELECT * FROM skills WHERE ResumeID = 1", connection))
+            using (var cmd = new MySqlCommand("SELECT * FROM skills", connection))
             {
                 // Execute the command
                 using (var reader = cmd.ExecuteReader())
@@ -191,8 +200,9 @@
 
             // Load certifications
             resume.Certifications = new List<Certification>();
-            using (var cmd = new MySqlCommand("SELECT * FROM certifications WHERE ResumeID = 1", connection))
+            using (var cmd = new MySqlCommand("SELECT * FROM certifications", connection))
             {
+                // Execute the command
                 using (var reader = cmd.ExecuteReader())
                 {
                     // Read the data for each certification
@@ -212,7 +222,3 @@
         }
     }
 }
-
-
-
-

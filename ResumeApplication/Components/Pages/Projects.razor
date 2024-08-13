@@ -1,9 +1,38 @@
 ﻿@page "/projects"
+@using ResumeApplication.Classes
 
-<h3>Projects</h3>
+<h1 class="my-4">Projects</h1>
 
+<div class="container">
+    @foreach (var project in projects)
+    {
+        <div class="card mb-3">
+            <div class="card-body">
+                <h2 class="card-title">@project.Title</h2>
+                <p class="card-text">@project.Description</p>
+                <p class="card-text"><strong>Technologies:</strong> @string.Join(", ", project.Technologies)</p>
+                <a href="@project.GitHubLink" class="btn btn-primary" target="_blank">View on GitHub</a>
+            </div>
+        </div>
+    }
+</div>
 
-@code 
-{
-
-}                                     
+@code {
+    private List<Project> projects = new()
+    {
+        new Project
+        {
+            Title = "Calculator and To Do List",
+            Description = "This shows my ability to handle Abstract Classes, Event Driven Applications and Exception Handling",
+            Technologies = new List<string> { "C#", "Blazor" },
+            GitHubLink = "https://github.com/AshleenSidhu/cprg211Projects/tree/main/Assignment2/Assignment2"
+        },
+        new Project
+        {
+            Title = "Appliances Company Management System",
+            Description = "This shows my ability to handle Classes and Inheritance.",
+            Technologies = new List<string> { "C#", "Blazor" },
+            GitHubLink = "https://github.com/AshleenSidhu/cprg211Projects/tree/main/Assignment1"
+        }
+    };
+}
